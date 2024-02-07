@@ -1,13 +1,38 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import { X } from 'lucide-react'
+import { ChangeEvent, FormEvent, useState } from 'react'
+import { toast } from 'sonner'
 
 
 export function NewNoteCard(){
+  const [shouldShowOnBoarding, setShouldShowOnBoarding] = useState(true)
+  const [content, setContent] = useState('')  
+
+  function handleStartEditor(){
+    setShouldShowOnBoarding(false)
+  }
+
+  function handleContentChanged(event: ChangeEvent<HTMLTextAreaElement>){
+    setContent(event.target.value)
+
+    if (event.target.value === ""){
+      setShouldShowOnBoarding(true)
+    }
+  }
+
+  function handleSaveNote(event: FormEvent<HTMLFormElement>){
+    event.preventDefault();
+
+    console.log(content);
+    
+    toast.success('Nota criada com sucesso')
+  }
+
     return (
         <Dialog.Root>
           <Dialog.Trigger className='flex flex-col text-left gap-5 rounded-md bg-slate-800 p-5 hover:ring-2 hover:ring-slate-600 focus:ring-2 focus:ring-lime-400 outline-none'>
               <span className='text-sm font-medium text-slate-200'>Adicionar nota</span>
-              <p className='text-sm leading-6 text-slate-400'>Comece gravando uma nota em áudio ou se preferir utilize apenas texto.</p>
+              <p className='text-sm leading-6 text-slate-400'>Grave uma nota em áudio que será convertida para texto automaticamente.</p>
           </Dialog.Trigger>
 
           <Dialog.Portal>
@@ -17,23 +42,33 @@ export function NewNoteCard(){
                         <X  className='size-5'/>
                     </Dialog.Close>
                     
-                    <div className='flex flex-1 flex-col gap-3 p-5'>
-                        <span className='text-sm font-medium text-slate-400'>
-                            Adicionar nota
-                        </span>
+                      <form onSubmit={handleSaveNote} className='flex flex-col flex-1'>
+                        <div className='flex flex-1 flex-col gap-3 p-5'>
+                            <span className='text-sm font-medium text-slate-400'>
+                                Adicionar nota
+                            </span>
 
-                        <p className='text-sm leading-6 text-'>
-                          Comece <button className='font-medium text-lime-400 hover:underline'>gravando uma nota</button> em áudio ou se preferir <button className='font-medium text-lime-400 hover:underline'>utilize apenas texto</button>.
-                        </p>
-                    </div>
+                            {shouldShowOnBoarding ? (
+                              <p className='text-sm leading-6 text-'>
+                              Comece <button className='font-medium text-lime-400 hover:underline'>gravando uma nota</button> em áudio ou se preferir <button onClick={handleStartEditor} className='font-medium text-lime-400 hover:underline'>utilize apenas texto</button>.
+                            </p>
+                            ) : (
+                            <textarea
+                              autoFocus
+                              className='text-sm leading-6 text-slate-400 bg-transparent resize-none flex-1 outline-none'
+                              onChange={handleContentChanged}
+                            />
+                            )}
+                        </div>
 
-                    <button 
-                        type='button'
-                        className='w-full py-4 text-center text-smoutline-none font-medium bg-lime-400 text-lime-950 hover:bg-lime-500'
-                        >
-                          Salvar nota
-                    </button>
-                </Dialog.Content>
+                        <button 
+                            type='submit'
+                            className='w-full py-4 text-center text-smoutline-none font-medium bg-lime-400 text-lime-950 hover:bg-lime-500'
+                            >
+                              Salvar nota
+                        </button>
+                    </form>
+                  </Dialog.Content>
             </Dialog.Portal>
 
         </Dialog.Root>
