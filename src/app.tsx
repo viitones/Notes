@@ -1,6 +1,6 @@
 import { NoteCard } from './components/NoteCard'
 import { NewNoteCard } from './components/NewNoteCard'
-import { useState } from 'react'
+import { ChangeEvent, useState } from 'react'
 
 import logo from './assets/logo.svg'
 
@@ -11,6 +11,8 @@ interface Note {
 }
 
 export function App(){
+  const [search, setSearch] = useState('')
+
   const [notes, setNotes] = useState<Note[]>(() => {
     
     const notesOnStorage = localStorage.getItem('notes')
@@ -36,6 +38,18 @@ export function App(){
     localStorage.setItem('notes', JSON.stringify(notesArray))
   }
 
+
+  function handleSearch(event: ChangeEvent<HTMLInputElement>){
+    const query = event.target.value
+
+    setSearch(query)
+  }
+
+  const filteredNotes = search !== ''
+    ? notes.filter(note => note.content.toLowerCase().includes(search.toLowerCase()))
+    : notes
+
+
   return(
     <div className='mx-auto max-w-6xl my-12 space-y-6'>
       <img src={logo} alt="logo" />
@@ -44,6 +58,7 @@ export function App(){
         type="text" 
         placeholder='busque suas notas' 
         className='w-full bg-transparent text-3xl font-semibold tracking-tight outline-none placeholder:text-slate-500'
+        onChange={handleSearch}
         />
       </form>
 
@@ -53,7 +68,10 @@ export function App(){
         
         <NewNoteCard onNoteCreated={onNoteCreated} />
 
-        {notes.map(note => {
+        {/* inicialmente passado valor notes, mas mudou para ser
+        realizado a busca */}
+
+        {filteredNotes.map(note => {
           return <NoteCard key={note.id} note={note} />
         })}
 
