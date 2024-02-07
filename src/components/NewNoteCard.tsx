@@ -4,7 +4,11 @@ import { ChangeEvent, FormEvent, useState } from 'react'
 import { toast } from 'sonner'
 
 
-export function NewNoteCard(){
+interface NewNoteCardProps {
+  onNoteCreated: (content: string) => void
+}
+
+export function NewNoteCard({onNoteCreated}: NewNoteCardProps){
   const [shouldShowOnBoarding, setShouldShowOnBoarding] = useState(true)
   const [content, setContent] = useState('')  
 
@@ -18,12 +22,20 @@ export function NewNoteCard(){
     if (event.target.value === ""){
       setShouldShowOnBoarding(true)
     }
+
+  }
+
+  function trueModal(){
+    setShouldShowOnBoarding(true)
   }
 
   function handleSaveNote(event: FormEvent<HTMLFormElement>){
     event.preventDefault();
 
-    console.log(content);
+    onNoteCreated(content)
+    setShouldShowOnBoarding(true)
+
+    setContent('') 
     
     toast.success('Nota criada com sucesso')
   }
@@ -36,9 +48,9 @@ export function NewNoteCard(){
           </Dialog.Trigger>
 
           <Dialog.Portal>
-                <Dialog.Overlay className='inset-0 fixed bg-black/50'/>
-                <Dialog.Content className='fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[640px] h-[60vh] w-full bg-slate-700 rounded-md flex flex-col outline-none overflow-hidden'>
-                    <Dialog.Close className='absolute top-0 right-0 bg-slate-800 px-1.5 text-slate-400 hover:text-slate-100'>
+                <Dialog.Overlay className='data-[state=open]:animate-overlayshow inset-0 fixed bg-black/50 '/>
+                <Dialog.Content className='data-[state=open]:animate-contentshow fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[640px] h-[60vh] w-full bg-slate-700 rounded-md flex flex-col outline-none overflow-hidden'>
+                    <Dialog.Close onClick={trueModal} className='absolute top-0 right-0 bg-slate-800 px-1.5 text-slate-400 hover:text-slate-100'>
                         <X  className='size-5'/>
                     </Dialog.Close>
                     
@@ -57,6 +69,7 @@ export function NewNoteCard(){
                               autoFocus
                               className='text-sm leading-6 text-slate-400 bg-transparent resize-none flex-1 outline-none'
                               onChange={handleContentChanged}
+                              value={content}
                             />
                             )}
                         </div>

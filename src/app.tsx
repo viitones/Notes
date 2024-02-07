@@ -1,14 +1,28 @@
 import { NoteCard } from './components/NoteCard'
 import { NewNoteCard } from './components/NewNoteCard'
+import { useState } from 'react'
 
 import logo from './assets/logo.svg'
 
-const note = {
-  date: new Date(),
-  content: "Hello"
+interface Note {
+  id: string,
+  date: Date,
+  content: string
 }
 
 export function App(){
+  const [notes, setNotes] = useState<Note[]>([])
+
+  function onNoteCreated(content: string) {
+    const newNote = {
+      id: crypto.randomUUID(),
+      date: new Date(),
+      content,
+    }
+
+    setNotes([newNote, ...notes])
+  }
+
   return(
     <div className='mx-auto max-w-6xl my-12 space-y-6'>
       <img src={logo} alt="logo" />
@@ -24,10 +38,11 @@ export function App(){
 
       <div className='grid gap-6 grid-cols-3 auto-rows-[250px]'>
         
-        <NewNoteCard />
+        <NewNoteCard onNoteCreated={onNoteCreated} />
 
-        <NoteCard note={note}/>
-        <NoteCard note={note} />
+        {notes.map(note => {
+          return <NoteCard key={note.id} note={note} />
+        })}
 
       </div>
     </div>
