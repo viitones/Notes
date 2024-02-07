@@ -32,8 +32,9 @@ export function NewNoteCard({onNoteCreated}: NewNoteCardProps){
   function handleSaveNote(event: FormEvent<HTMLFormElement>){
     event.preventDefault();
 
-    onNoteCreated(content)
-    setShouldShowOnBoarding(true)
+    onNoteCreated(content);
+    
+    trueModal();
 
     setContent('') 
     
